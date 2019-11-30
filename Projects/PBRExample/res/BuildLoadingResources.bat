@@ -1,1 +1,1 @@
-call python ..\..\..\Tools\Bolt-Resources\resource_builder.py LoadingResources
+call python ..\..\..\Bolt\Tools\Bolt-Resources\resource_builder.py LoadingResources
