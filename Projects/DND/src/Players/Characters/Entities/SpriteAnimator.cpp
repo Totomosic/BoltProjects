@@ -1,4 +1,4 @@
-#include "bltpch.h"
+#include "dndpch.h"
 #include "SpriteAnimator.h"
 
 namespace DND
@@ -9,13 +9,13 @@ namespace DND
 		
 	}
 
-	SpriteAnimator::SpriteAnimator(const ResourcePtr<const Texture2D>& defaultTexture) : Component(),
+	SpriteAnimator::SpriteAnimator(const ResourcePtr<Texture2D>& defaultTexture) : Component(),
 		m_Mesh(nullptr), m_DefaultTexture(defaultTexture), m_CurrentAnimation({ {}, 0.0f })
 	{
 
 	}
 
-	const ResourcePtr<const Texture2D>& SpriteAnimator::DefaultTexture() const
+	const ResourcePtr<Texture2D>& SpriteAnimator::DefaultTexture() const
 	{
 		return m_DefaultTexture;
 	}
@@ -52,7 +52,7 @@ namespace DND
 		{
 			if (m_CurrentAnimation.RemainingTime > 0.0f)
 			{
-				m_CurrentAnimation.RemainingTime -= Time::RenderingTimeline().DeltaTime();
+				m_CurrentAnimation.RemainingTime -= Time::Get().RenderingTimeline().DeltaTime();
 				if (m_CurrentAnimation.RemainingTime <= 0.0f)
 				{
 					UseDefaultTexture();
@@ -62,7 +62,7 @@ namespace DND
 		}
 	}
 
-	void SpriteAnimator::SetDefaultTexture(const ResourcePtr<const Texture2D>& texture)
+	void SpriteAnimator::SetDefaultTexture(const ResourcePtr<Texture2D>& texture)
 	{
 		m_DefaultTexture = texture;
 		if (!IsPlayingAnimation())
@@ -94,7 +94,7 @@ namespace DND
 
 	void SpriteAnimator::UseDefaultTexture()
 	{
-		m_Mesh->Materials[0]->GetShader().GetLink("Texture") = m_DefaultTexture;
+		m_Mesh->Materials[0]->GetLinkContext().Link("Texture", m_DefaultTexture);
 	}
 
 	void SpriteAnimator::UseAnimation()

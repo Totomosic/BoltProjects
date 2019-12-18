@@ -1,4 +1,4 @@
-#include "bltpch.h"
+#include "dndpch.h"
 #include "CharacterAnimator.h"
 
 namespace DND
@@ -20,12 +20,12 @@ namespace DND
 		return m_CurrentDirection;
 	}
 
-	const ResourcePtr<const Texture2D>& CharacterAnimator::CurrentTexture() const
+	const ResourcePtr<Texture2D>& CharacterAnimator::CurrentTexture() const
 	{
 		return GetTextureByDirection(CurrentDirection());
 	}
 
-	const ResourcePtr<const Texture2D>& CharacterAnimator::GetTextureByDirection(Direction direction) const
+	const ResourcePtr<Texture2D>& CharacterAnimator::GetTextureByDirection(Direction direction) const
 	{
 		switch (direction)
 		{

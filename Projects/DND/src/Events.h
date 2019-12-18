@@ -1,12 +1,12 @@
 #pragma once
-#include "bltpch.h"
+#include "dndpch.h"
 
 namespace DND
 {
 
-	constexpr int PACKET_RECEIVED_EVENT = EventManager::USER_EVENT_ID + 0;
-	constexpr int SERVER_SHUTDOWN_EVENT = EventManager::USER_EVENT_ID + 1;
+	constexpr uint32_t PACKET_RECEIVED_EVENT = Events::MIN_USER_ID + 0;
+	constexpr uint32_t SERVER_SHUTDOWN_EVENT = Events::MIN_USER_ID + 1;
 
-	constexpr int START_GAME_EVENT = EventManager::USER_EVENT_ID + 50;
+	constexpr uint32_t START_GAME_EVENT = Events::MIN_USER_ID + 50;
 
 }

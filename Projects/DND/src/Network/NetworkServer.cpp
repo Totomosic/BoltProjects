@@ -1,27 +1,26 @@
-#include "bltpch.h"
+#include "dndpch.h"
 #include "NetworkServer.h"
 
 namespace DND
 {
 
 	NetworkServer::NetworkServer(SocketAddress address)
-		: m_OnReceivedPacket(), m_BoundAddress(std::move(address)), m_Socket(AddressFamily::INET)
+		: m_Bus(), m_OnReceivedPacket(m_Bus.GetEmitter<ReceivedPacket>(PACKET_RECEIVED_EVENT)), m_BoundAddress(std::move(address)), m_Socket(AddressFamily::INET)
 	{
-		m_OnReceivedPacket.Subscribe([this](ReceivedPacket& packet)
-		{
-			std::vector<ListenerInfo>& callbacks = m_Callbacks[packet.Type];
-			for (int i = callbacks.size() - 1; i >= 0; i--)
+		m_OnReceivedPacket.AddEventListener([this](Event<ReceivedPacket>& e)
 			{
-				ListenerInfo& callbackInfo = callbacks[i];
-				if (callbackInfo.Callback(packet))
+				auto& packet = e.Data;
+				std::vector<ListenerInfo>& callbacks = m_Callbacks[packet.Type];
+				for (int i = callbacks.size() - 1; i >= 0; i--)
 				{
-					callbacks.erase(callbacks.begin() + i);
+					ListenerInfo& callbackInfo = callbacks[i];
+					if (callbackInfo.Callback(packet))
+					{
+						callbacks.erase(callbacks.begin() + i);
+					}
+					packet.Packet.Reset(PACKET_HEADER_SIZE);
 				}
-				packet.Packet.Reset(PACKET_HEADER_SIZE);
-			}
-			ListenerResponse response;
-			return response;
-		});
+			});
 	}
 
 	const SocketAddress& NetworkServer::Address() const
@@ -34,13 +33,13 @@ namespace DND
 		while (!Bind())
 		{
 			sockaddr_in& currentAddress = *(sockaddr_in*)&m_BoundAddress.m_SockAddr;
-			uint addr = ntohl(currentAddress.sin_addr.S_un.S_addr);
+			uint32_t addr = ntohl(currentAddress.sin_addr.S_un.S_addr);
 			SetAddress(SocketAddress(addr, ntohs(currentAddress.sin_port) + 1));
 		}
 		BLT_INFO("STARTED SERVER ON {}", m_BoundAddress);
 		std::thread listenerThread([this]()
 		{
-			constexpr uint MAX_PACKET_SIZE = 1024;
+			constexpr uint32_t MAX_PACKET_SIZE = 1024;
 			byte PACKET_BUFFER[MAX_PACKET_SIZE];
 			while (true)
 			{
@@ -64,7 +63,7 @@ namespace DND
 						packetEventArgs.Type = packetType;
 						packetEventArgs.FromAddress = fromAddress;
 						packetEventArgs.Packet = std::move(packet);
-						m_OnReceivedPacket.Post(std::move(packetEventArgs));
+						m_OnReceivedPacket.Emit(std::move(packetEventArgs));
 					}
 					else
 					{
@@ -77,19 +76,17 @@ namespace DND
 				}
 			}
 			BLT_INFO("STOPPED SERVER ON {}", m_BoundAddress);
-			EventManager::Post<ServerShutdownEvent>();
+			EventManager::Get().Bus().Emit(SERVER_SHUTDOWN_EVENT);
 		});
 		listenerThread.detach();
 	}
 
 	void NetworkServer::Terminate(NetworkServer::ServerTerminatedCallback callback)
 	{
-		EventManager::Subscribe<ServerShutdownEvent>([callback = std::move(callback)](ServerShutdownEvent& e)
+		EventManager::Get().Bus().AddEventListener<ServerShutdownEvent>(SERVER_SHUTDOWN_EVENT, [callback = std::move(callback)](Event<ServerShutdownEvent>& e)
 		{
 			callback();
-			ListenerResponse response;
-			response.UnsubscribeListener = true;
-			return response;
+			// Unsubscribe HERE
 		});
 		TerminateServer();
 	}

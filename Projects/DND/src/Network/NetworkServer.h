@@ -1,5 +1,5 @@
 #pragma once
-#include "bltpch.h"
+#include "dndpch.h"
 #include "Events.h"
 #include "Packets.h"
 
@@ -26,10 +26,9 @@ namespace DND
 	
 	}
 
-	class ServerShutdownEvent : public Event
+	class ServerShutdownEvent
 	{
-	public:
-		BLT_EVENT_ID_DEF(SERVER_SHUTDOWN_EVENT);
+
 	};
 
 	class NetworkServer
@@ -48,7 +47,8 @@ namespace DND
 		};
 
 	private:
-		EventDispatcher<ReceivedPacket> m_OnReceivedPacket;
+		EventBus m_Bus;
+		EventEmitter<ReceivedPacket> m_OnReceivedPacket;
 
 		SocketAddress m_BoundAddress;
 		UDPsocket m_Socket;

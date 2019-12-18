@@ -8,8 +8,8 @@ project "DND"
     targetdir (SolutionDir .. "bin/" .. outputdir .. "/DND")
     objdir (SolutionDir .. "bin-int/" .. outputdir .. "/DND")
 
-    pchheader "bltpch.h"
-    pchsource "src/bltpch.cpp"
+    pchheader "dndpch.h"
+    pchsource "src/dndpch.cpp"
     
     files
     {

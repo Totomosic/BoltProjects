@@ -1,5 +1,5 @@
 #pragma once
-#include "bltpch.h"
+#include "dndpch.h"
 
 namespace DND
 {
@@ -7,7 +7,7 @@ namespace DND
 	struct AnimationInfo
 	{
 	public:
-		ResourcePtr<const Texture2D> Texture;
+		ResourcePtr<Texture2D> Texture;
 		int Columns;
 		int Rows;
 	};
@@ -25,14 +25,14 @@ namespace DND
 
 	private:
 		Mesh* m_Mesh;
-		ResourcePtr<const Texture2D> m_DefaultTexture;
+		ResourcePtr<Texture2D> m_DefaultTexture;
 		AnimationData m_CurrentAnimation;
 
 	public:
 		SpriteAnimator();
-		SpriteAnimator(const ResourcePtr<const Texture2D>& defaultTexture);
+		SpriteAnimator(const ResourcePtr<Texture2D>& defaultTexture);
 
-		const ResourcePtr<const Texture2D>& DefaultTexture() const;
+		const ResourcePtr<Texture2D>& DefaultTexture() const;
 		const AnimationInfo& CurrentAnimation() const;
 		bool IsPlayingAnimation() const;
 		float RemainingAnimationTime() const;
@@ -42,7 +42,7 @@ namespace DND
 		void Update() override;
 		void StopAnimation();
 
-		void SetDefaultTexture(const ResourcePtr<const Texture2D>& texture);
+		void SetDefaultTexture(const ResourcePtr<Texture2D>& texture);
 		void PlayAnimation(const AnimationInfo& animation, float repeatTime, float animationDuration);
 		void PlayAnimation(const AnimationInfo& animation, float repeatTime);
 		void PlayAnimationUntilStopped(const AnimationInfo& animation, float repeatTime);

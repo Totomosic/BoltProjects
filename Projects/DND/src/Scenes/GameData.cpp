@@ -1,10 +1,13 @@
-#include "bltpch.h"
+#include "dndpch.h"
 #include "GameData.h"
 #include "../GlobalState.h"
 
 #include "../Players/Characters/Entities/TileMotion.h"
 #include "../Players/Characters/Entities/SpriteAnimator.h"
 #include "../Players/Characters/Entities/CharacterAnimator.h"
+
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "../vendor/stb_image_write.h"
 
 namespace DND
 {
@@ -17,9 +20,9 @@ namespace DND
 		ResourcePtr<Texture2D> blueWizardRight = ResourceManager::Get().GetResource<Texture2D>(resources.GetResourceId("WizardStaticRight"));
 
 		Mesh blueWizardMesh;
-		blueWizardMesh.Models.push_back({ ObjectFactory::SquareModel(), Matrix4f::Translation(0, GlobalState::MapManager.TileHeight() * 0.35f, 0) 
+		blueWizardMesh.Models.push_back({ BasicModels::Get().Square(), Matrix4f::Translation(0, GlobalState::MapManager.TileHeight() * 0.35f, 0) 
 			* Matrix4f::Scale(GlobalState::MapManager.TileWidth() * 0.9f, GlobalState::MapManager.TileHeight() * 1.5f, 1), { 0 } });
-		blueWizardMesh.Materials[0] = ResourceManager::Get().Materials().Texture(blueWizardDown);
+		blueWizardMesh.Materials.push_back(ResourceManager::Get().Materials().Texture(blueWizardDown));
 
 		ObjectPrefab blueWizardPrefab;
 		blueWizardPrefab.Components().AddComponent<MeshRenderer>(std::move(blueWizardMesh));
@@ -27,6 +30,11 @@ namespace DND
 		blueWizardPrefab.Components().AddComponent<CharacterAnimator>(Direction::Down, CharacterTextureSet{ blueWizardUp, blueWizardDown, blueWizardLeft, blueWizardRight });
 
 		GlobalState::Prefabs.BlueWizardCharacter = GlobalState::Factory.AddPrefab(std::move(blueWizardPrefab));
+	}
+
+	void WriteImage(const Image& image, const blt::string& filename)
+	{
+		stbi_write_jpg(filename.c_str(), image.Width, image.Height, image.Components, image.Pixels, 1);
 	}
 
 	void CreateTilemaps(const ResourcePack& resources)

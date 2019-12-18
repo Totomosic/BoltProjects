@@ -16,10 +16,10 @@ namespace DND
 	struct CharacterTextureSet
 	{
 	public:
-		ResourcePtr<const Texture2D> UpTexture;
-		ResourcePtr<const Texture2D> DownTexture;
-		ResourcePtr<const Texture2D> LeftTexture;
-		ResourcePtr<const Texture2D> RightTexture;
+		ResourcePtr<Texture2D> UpTexture;
+		ResourcePtr<Texture2D> DownTexture;
+		ResourcePtr<Texture2D> LeftTexture;
+		ResourcePtr<Texture2D> RightTexture;
 
 	};
 
@@ -35,8 +35,8 @@ namespace DND
 
 		const CharacterTextureSet& Textures() const;
 		Direction CurrentDirection() const;
-		const ResourcePtr<const Texture2D>& CurrentTexture() const;
-		const ResourcePtr<const Texture2D>& GetTextureByDirection(Direction direction) const;
+		const ResourcePtr<Texture2D>& CurrentTexture() const;
+		const ResourcePtr<Texture2D>& GetTextureByDirection(Direction direction) const;
 
 		void Start() override;
 		void SetCurrentDirection(Direction direction);

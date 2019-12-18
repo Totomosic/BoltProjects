@@ -1,5 +1,5 @@
 #pragma once
-#include "bltpch.h"
+#include "dndpch.h"
 
 namespace DND
 {
@@ -14,7 +14,7 @@ namespace DND
 	template<typename T>
 	inline void Deserialize(InputMemoryStream& stream, T& outValue)
 	{
-		BLT_ASSERT(false, "Unable to deserialize type " + typeid(T).name());
+		BLT_ASSERT(false, blt::string("Unable to deserialize type ") + typeid(T).name());
 	}
 
 	DND_CREATE_DESERIALIZE_SIMPLE_TYPE(char);

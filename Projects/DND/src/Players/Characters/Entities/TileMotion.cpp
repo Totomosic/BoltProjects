@@ -1,4 +1,4 @@
-#include "bltpch.h"
+#include "dndpch.h"
 #include "TileMotion.h"
 
 #include "CharacterAnimator.h"
@@ -46,7 +46,7 @@ namespace DND
 			Vector3f toTarget = targetPosition - currentPosition;
 			float toTargetLength = toTarget.Length();
 			Vector3f toTargetDir = toTarget.Normalize();
-			float moveLength = RealSpeed() * Time::RenderingTimeline().DeltaTime();
+			float moveLength = RealSpeed() * Time::Get().RenderingTimeline().DeltaTime();
 			if (toTargetLength <= moveLength)
 			{
 				moveLength = toTargetLength;

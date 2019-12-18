@@ -1,4 +1,4 @@
-#include "bltpch.h"
+#include "dndpch.h"
 #include "Tilemap.h"
 
 namespace DND
@@ -132,8 +132,9 @@ namespace DND
 				Image image = CreateImage(layer, tiles);
 				TextureCreateOptions options;
 				Texture2D* texture = new Texture2D(image, options);
-				BLT_WARN("CREATED MAP TEXTURE {}", (int)texture);
-				layer.Object = factory.Image(Width() * m_TileWidth, Height() * m_TileHeight, ResourcePtr<const Texture2D>((const Texture2D*)texture, true), Transform({ 0, 0, -25 }));
+				BLT_WARN("CREATED MAP TEXTURE {}", (intptr_t)texture);
+				layer.Object = factory.Image(Width() * m_TileWidth, Height() * m_TileHeight, ResourcePtr<Texture2D>((Texture2D*)texture, true), Transform({ 0, 0, -25 }));
+				BLT_INFO("CREATED TILE");
 			}
 		}
 	}
@@ -151,7 +152,7 @@ namespace DND
 					const Image& image = images[i];
 					TextureCreateOptions options;
 					Texture2D* texture = new Texture2D(image, options);
-					info.Object = factory.Image(tilewidth, tileheight, ResourcePtr<const Texture2D>((const Texture2D*)texture, true), Transform({ 0, 0, -25 }));
+					info.Object = factory.Image(tilewidth, tileheight, ResourcePtr<Texture2D>((Texture2D*)texture, true), Transform({ 0, 0, -25 }));
 				}
 			}
 			callback();
@@ -178,7 +179,7 @@ namespace DND
 		image.Width = Width() * xPixelsPerTile;
 		image.Height = Height() * yPixelsPerTile;
 		image.Components = 4;
-		image.Pixels = new byte[image.Width * image.Height * image.Components];
+		image.Pixels = new byte[(int64_t)image.Width * (int64_t)image.Height * (int64_t)image.Components];
 		std::unordered_map<id_t, Image> resizedImages;
 		for (int i = 0; i < Width(); i++)
 		{
@@ -198,7 +199,7 @@ namespace DND
 				}
 			}
 		}
-		return image);
+		return image;
 	}
 
 	Task<std::vector<Image>> Tilemap::CreateImagesAsync(const std::vector<Tilemap::LayerInfo>& layers, const std::unordered_map<id_t, Image>& tiles)
@@ -214,7 +215,7 @@ namespace DND
 					images.push_back(std::move(image));
 				}
 			}
-			return images);
+			return images;
 		});
 	}
 

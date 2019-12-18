@@ -1,4 +1,4 @@
-#include "bltpch.h"
+#include "dndpch.h"
 #include "GameScene.h"
 #include "ServerScene.h"
 
@@ -10,7 +10,7 @@ namespace DND
 
 	Scene& CreateGameScene(const ResourcePack& resources)
 	{
-		Scene& scene = SceneManager::CreateScene("Game");
+		Scene& scene = SceneManager::Get().CreateScene(12, "Game");
 		Camera* camera = scene.CreateCamera(Projection::Orthographic(0, 1920, 0, 1080, 0, 100));
 		Layer& tilemapLayer = scene.CreateLayer(camera);
 		Layer& entityLayer = scene.CreateLayer(camera);
@@ -19,39 +19,34 @@ namespace DND
 		GlobalState::MapManager.SetMapLayer(tilemapLayer);
 		GlobalState::Factory.SetCurrentLayer(entityLayer);
 
-		scene.OnLoad.Subscribe([](SceneLoadedEvent& e)
-		{
-			GameStartData& data = *(GameStartData*)e.LoadData.get();
+		scene.OnLoad.AddEventListener([](Event<SceneLoadedEvent>& e)
+			{
+				GameStartData& data = std::any_cast<GameStartData>(e.Data.LoadData);
 
-			GameObject* dndInstance = GlobalState::Factory.Instantiate();
-			DndInstance& instance = dndInstance->Components().AddComponent<DndInstance>(GlobalState::MapManager, GlobalState::Factory);
-			if (data.IsHosting)
-			{
-				instance.StartGame(data.CharacterData);
-			} 
-			else
-			{
-				instance.StartGame(data.Address, data.CharacterData, [addr = data.Address]()
+				GameObject* dndInstance = GlobalState::Factory.Instantiate();
+				DndInstance& instance = dndInstance->Components().AddComponent<DndInstance>(GlobalState::MapManager, GlobalState::Factory);
+				if (data.IsHosting)
 				{
-					BLT_ERROR("CONNECTION TO {} TIMED OUT", addr.PrivateEndpoint);
-					SceneManager::SetCurrentSceneByName("Server");
-				});
-			}
+					instance.StartGame(data.CharacterData);
+				} 
+				else
+				{
+					instance.StartGame(data.Address, data.CharacterData, [addr = data.Address]()
+					{
+						BLT_ERROR("CONNECTION TO {} TIMED OUT", addr.PrivateEndpoint);
+						SceneManager::Get().SetCurrentSceneByName("Server");
+					});
+				}
+			});
 
-			ListenerResponse response;
-			return response;
-		});
-
-		scene.OnUnload.Subscribe([&entityLayer](SceneUnloadedEvent& e)
-		{
-			entityLayer.Clear();
-			ListenerResponse response;
-			return response;
-		});
+		scene.OnUnload.AddEventListener([&entityLayer](Event<SceneUnloadedEvent>& e)
+			{
+				entityLayer.Clear();
+			});
 
 		RenderSchedule schedule(scene);
 		schedule.AddRenderProcess({});
-		SceneRenderer::AddRenderSchedule(schedule);
+		SceneRenderer::Get().AddRenderSchedule(schedule);
 		return scene;
 	}
 

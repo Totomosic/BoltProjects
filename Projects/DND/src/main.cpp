@@ -1,4 +1,4 @@
-#include "bltpch.h"
+#include "dndpch.h"
 
 #include "GlobalState.h"
 
@@ -19,31 +19,30 @@ namespace DND
 	public:
 		void Init() override
 		{
-			AppWindow->CentreOnMonitor(Monitor::Primary());
-			ResourcePack resources = ResourceManager::Get().FetchPack("res/resources.pack");
-			ResourceManager::Get().LoadPack(resources);
-			ResourceManager::Get().Register(std::make_unique<Font>("res/arial.ttf", 42));
+			GetWindow().CentreOnMonitor(Monitor::Primary());
+			ResourceManager::Get().LoadPack("res/resources.pack", [](const ResourcePack& resources)
+				{
+					CreateTilemaps(resources);
+					CreateCharacterPrefabs(resources);
 
-			CreateTilemaps(resources);
-			CreateCharacterPrefabs(resources);
+					Scene& loadingScene = CreateLoadingScene(resources);
+					Scene& titleScene = CreateTitleScene(resources);
+					Scene& characterScene = CreateCharacterScene(resources);
+					Scene& serverScene = CreateServerScene(resources);
+					Scene& gameScene = CreateGameScene(resources);
 
-			Scene& loadingScene = CreateLoadingScene(resources);
-			Scene& titleScene = CreateTitleScene(resources);
-			Scene& characterScene = CreateCharacterScene(resources);
-			Scene& serverScene = CreateServerScene(resources);
-			Scene& gameScene = CreateGameScene(resources);
+					SceneManager::Get().SetCurrentScene(titleScene);
 
-			SceneManager::SetCurrentScene(titleScene);
+					NetworkManager::Get().Initialize([](bool initialized)
+						{
 
-			NetworkManager::Get().Initialize([](bool initialized)
-			{
-				
-			});			
+						});
+				});				
 		}
 
 		void Tick() override
 		{
-			AppWindow->SetTitle("RPG " + std::to_string((int)Time::FramesPerSecond()));
+			GetWindow().SetTitle("RPG " + std::to_string((int)Time::Get().FramesPerSecond()));
 		}
 
 		void Update() override
@@ -51,7 +50,7 @@ namespace DND
 			NetworkManager::Get().Update();
 			if (Input::Get().KeyPressed(Keycode::Esc))
 			{
-				SceneManager::SetCurrentSceneByName("Title");
+				SceneManager::Get().SetCurrentSceneByName("Title");
 			}
 			if (Input::Get().KeyPressed(Keycode::R))
 			{
@@ -64,7 +63,7 @@ namespace DND
 
 		void Render() override
 		{
-			Graphics::RenderScene();
+			Graphics::Get().RenderScene();
 		}
 
 		void Exit() override
@@ -83,12 +82,11 @@ namespace DND
 int main()
 {
 	EngineCreateInfo info;
-	Engine e(info);
-	WindowCreateInfo window;
+	auto& window = info.WindowInfo;
 	window.Title = "RPG";
 	window.Width = 1280;
 	window.Height = 720;
-	e.SetWindowCreateInfo(window);
+	Engine e(info);	
 	e.SetApplication<DND::App>();
 	e.Run();
 	return 0;

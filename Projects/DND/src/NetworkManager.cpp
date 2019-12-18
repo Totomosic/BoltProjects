@@ -1,4 +1,4 @@
-#include "bltpch.h"
+#include "dndpch.h"
 #include "NetworkManager.h"
 
 namespace DND
@@ -22,7 +22,7 @@ namespace DND
 		s_Ec2Address = SocketAddress("ec2-18-218-83-100.us-east-2.compute.amazonaws.com", 12345);
 
 		uint16_t port = 10000;
-		std::vector<uint> addresses = SocketUtil::GetIP4Addresses();
+		std::vector<uint32_t> addresses = SocketUtil::GetIP4Addresses();
 		BLT_ASSERT(addresses.size() > 0, "UNABLE TO FIND AVAILABLE ADDRESS");
 		SocketAddress addr(addresses[0], port);
 		m_Server.SetAddress(addr);
@@ -125,7 +125,7 @@ namespace DND
 
 	void NetworkManager::Update()
 	{
-		m_Server.Update(Time::RenderingTimeline().DeltaTime());
+		m_Server.Update(Time::Get().RenderingTimeline().DeltaTime());
 	}
 
 }

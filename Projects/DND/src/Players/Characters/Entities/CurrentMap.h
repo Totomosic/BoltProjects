@@ -1,5 +1,5 @@
 #pragma once
-#include "bltpch.h"
+#include "Bolt.h"
 #include "../../../Map/TilemapManager.h"
 
 namespace DND

@@ -1,5 +1,5 @@
 #pragma once
-#include "bltpch.h"
+#include "dndpch.h"
 #include "Events.h"
 #include "Serialization.h"
 #include "Deserialization.h"
@@ -45,14 +45,12 @@ namespace DND
 		stream.Read((PacketTypeDataType*)&value, sizeof(PacketTypeDataType));
 	}
 
-	class ReceivedPacket : public Event
+	class ReceivedPacket
 	{
 	public:
 		PacketType Type;
 		SocketAddress FromAddress;
 		InputMemoryStream Packet;
-
-		BLT_EVENT_ID_DEF(PACKET_RECEIVED_EVENT);
 	};
 
 }
