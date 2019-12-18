@@ -23,6 +23,7 @@ namespace DND
 		blueWizardMesh.Models.push_back({ BasicModels::Get().Square(), Matrix4f::Translation(0, GlobalState::MapManager.TileHeight() * 0.35f, 0) 
 			* Matrix4f::Scale(GlobalState::MapManager.TileWidth() * 0.9f, GlobalState::MapManager.TileHeight() * 1.5f, 1), { 0 } });
 		blueWizardMesh.Materials.push_back(ResourceManager::Get().Materials().Texture(blueWizardDown));
+		blueWizardMesh.Materials[0]->SetIsTransparent(true);
 
 		ObjectPrefab blueWizardPrefab;
 		blueWizardPrefab.Components().AddComponent<MeshRenderer>(std::move(blueWizardMesh));
