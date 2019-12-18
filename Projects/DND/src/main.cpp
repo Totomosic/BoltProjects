@@ -37,7 +37,7 @@ namespace DND
 						{
 
 						});
-				});				
+				});
 		}
 
 		void Tick() override
