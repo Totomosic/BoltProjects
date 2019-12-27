@@ -20,6 +20,7 @@ namespace Minecraft
 		void Init() override
 		{		
 			GetWindow().SetClearColor(Color::CornflowerBlue);
+			GetWindow().DisableVSync();
 			Scene& s = SceneManager::Get().CreateScene();
 			camera = s.CreateCamera(Projection::Perspective(PI / 3, GetWindow().Aspect(), 0.1f, 5000.0f));
 			Layer& l = s.CreateLayer(camera);
@@ -97,7 +98,7 @@ namespace Minecraft
 
 		void Tick() override
 		{
-		
+			BLT_INFO(Time::Get().FramesPerSecond());
 		}
 
 		void Update() override
