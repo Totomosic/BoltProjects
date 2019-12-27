@@ -11,41 +11,39 @@ namespace Minecraft
 	class App : public Application
 	{
 	private:
-		Camera* camera;
+		EntityHandle m_Camera;
 		std::unique_ptr<ChunkManager> manager;
-
-		Renderer2D* renderer;
 
 	public:
 		void Init() override
 		{		
 			GetWindow().SetClearColor(Color::CornflowerBlue);
-			Scene& s = SceneManager::Get().CreateScene();
-			camera = s.CreateCamera(Projection::Perspective(PI / 3, GetWindow().Aspect(), 0.1f, 5000.0f));
-			Layer& l = s.CreateLayer(camera);
+			GetWindow().DisableVSync();
+			Scene& s = SceneManager::Get().AddScene();			
+			Layer& l = s.AddLayer();
 
-			constexpr blt::basic_string_view<char> str = "Hello";
-			std::cout << str.data() << std::endl;
-			constexpr bool e = str.ends_with('o');
-			std::cout << e << std::endl;
+			EntityFactory factory = l.GetFactory();
+			m_Camera = factory.Camera(Matrix4f::Perspective(PI / 3, GetWindow().Aspect(), 0.1f, 5000.0f));
 
-			Camera* uiCamera = s.CreateCamera(Projection::Orthographic(0, Width(), 0, Height(), -100, 100));
-			Layer& uiLayer = s.CreateLayer(uiCamera);
+			EntityHandle sun = factory.CreateTransform(Transform({ 0, 1000, 0 }));
+			ComponentHandle<LightSource> light = sun.Assign<LightSource>();
+			light->Ambient = 0.5f;
 
-			camera->transform().Translate(32, 200, 32);
-			camera->transform().Rotate(-PI / 2, Vector3f::Right());
-
-			renderer = new Renderer2D;
-			renderer->SetSpritesPerDraw(10000);
+			Layer& uiLayer = s.AddLayer();
+			EntityFactory uiFactory = uiLayer.GetFactory();
+			EntityHandle uiCamera = uiFactory.Camera(Matrix4f::Orthographic(0, Width(), 0, Height(), -100, 100));
+			
+			m_Camera.GetTransform()->Translate(32, 200, 32);
+			m_Camera.GetTransform()->Rotate(-PI / 2, Vector3f::Right());
 
 			ResourceManager::Get().LoadPack("res/resources.pack", [&l, this](const ResourcePack& pack)
 				{
 					ResourceExtractor resources(pack);
 					TextureAtlas atlas(resources.GetResourcePtr<Texture2D>("DefaultBlockFaces"), 16, 16);
 					BlockDatabase::Initialize(atlas);
-					ObjectFactory f(l);
+					EntityFactory factory = l.GetFactory();
 
-					manager = std::make_unique<ChunkManager>(f, atlas.GetTexture(), 4, 4);
+					manager = std::make_unique<ChunkManager>(factory, atlas.GetTexture(), 4, 4);
 					ChunkRegion& chunk = manager->GetChunkRegion();
 					TaskManager::Run([&chunk]()
 						{
@@ -83,26 +81,16 @@ namespace Minecraft
 							manager->BuildAllChunks();
 						});
 				});
-
-			RenderProcess p;
-			LightSource light;
-			light.Position = Vector3f(0, 10000, 0);
-			light.AmbientIntensity = 0.6f;
-			light.Intensity = 2.0f;
-			p.Options.GlobalContext.Lights.push_back(light);
-			RenderSchedule sch(s);
-			sch.AddRenderProcess(p);
-			SceneRenderer::Get().AddRenderSchedule(sch);
 		}
 
 		void Tick() override
 		{
-		
+			BLT_INFO(Time::Get().FramesPerSecond());
 		}
 
 		void Update() override
 		{
-			Transform& t = camera->transform();
+			Transform& t = *m_Camera.GetTransform();
 			static float speed = 15;
 			if (Input::Get().KeyDown(Keycode::W))
 			{
@@ -132,10 +120,6 @@ namespace Minecraft
 		void Render() override
 		{
 			Graphics::Get().RenderScene();
-			renderer->BeginScene({ Matrix4f::Identity(), Matrix4f::Orthographic(0, 1280, 0, 720, -100, 100) });
-			renderer->DrawRectangle(50, 50, 100, 100, Color::White, PI / 4);
-			renderer->EndScene();
-			renderer->Flush();
 		}
 
 	};

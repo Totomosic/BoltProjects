@@ -18,7 +18,7 @@ namespace Minecraft
 		{
 		public:
 			ResourcePtr<Model> ModelPtr;
-			GameObject* Object;
+			EntityHandle Entity;
 		};
 
 	private:
@@ -29,7 +29,7 @@ namespace Minecraft
 		std::unique_ptr<ChunkObject[]> m_ChunkObjects;
 
 	public:
-		ChunkManager(ObjectFactory& factory, const ResourcePtr<Texture2D>& atlas, int visibleXChunks, int visibleZChunks);
+		ChunkManager(EntityFactory& factory, const ResourcePtr<Texture2D>& atlas, int visibleXChunks, int visibleZChunks);
 
 		int GetVisibleXChunks() const;
 		int GetVisibleZChunks() const;

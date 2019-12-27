@@ -4,7 +4,7 @@
 namespace Minecraft
 {
 
-	ChunkManager::ChunkManager(ObjectFactory& factory, const ResourcePtr<Texture2D>& atlas, int visibleXChunks, int visibleZChunks)
+	ChunkManager::ChunkManager(EntityFactory& factory, const ResourcePtr<Texture2D>& atlas, int visibleXChunks, int visibleZChunks)
 		: m_VisibleXChunks(visibleXChunks), m_VisibleZChunks(visibleZChunks), m_VisibleRegion(visibleXChunks, visibleZChunks), m_LoadedChunks(), m_ChunkObjects(nullptr)
 	{
 		BLT_ASSERT(visibleXChunks > 0 && visibleZChunks > 0, "invalid dimension");
@@ -21,7 +21,7 @@ namespace Minecraft
 				Mesh m;
 				m.Models.push_back({ chunkModel });
 				m.Materials.push_back(std::move(material));
-				GameObject* chunkObject = factory.Instantiate(m, Transform({ (float)x * chunk->GetWidthInBlocks(), 0, (float)z * chunk->GetHeightInBlocks() }));
+				EntityHandle chunkObject = factory.CreateMesh(std::move(m), Transform({ (float)x * chunk->GetWidthInBlocks(), 0, (float)z * chunk->GetHeightInBlocks() }));
 				m_ChunkObjects[x + (uint64_t)z * m_VisibleXChunks] = { chunkModel, chunkObject };
 				m_LoadedChunks.push_back({ {x, z}, std::move(chunk) });
 			}
