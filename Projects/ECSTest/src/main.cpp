@@ -21,23 +21,6 @@ public:
 		material->LinkMetallic(1.0f);
 		material->LinkRoughness(0.5f);
 		m_Planet = factory.Sphere(1, std::move(material));
-
-		EntityHandle emerald = factory.Sphere(1, Color::White, Transform({ 10, 0, 0 }));
-		DefaultLightingMaterial& em = *(DefaultLightingMaterial*)emerald.GetComponent<Mesh>()->Materials[0].get();
-		em.LinkColor(Color::FromFloats(0.07568f, 0.61424f, 0.07568f));
-		em.LinkSpecularColor(Color::FromFloats(0.633, 0.727811, 0.633));
-		em.LinkShininess(0.6f);
-		em.LinkShineDamper(32);
-
-		for (int i = 0; i < 10; i++)
-		{
-			EntityHandle moon = factory.Sphere(0.1f, Color::White, Transform({ Random::NextFloat(-15, 15), 0, Random::NextFloat(-15, 15) }));
-			ComponentHandle<LightSource> light = moon.Assign<LightSource>();
-			light->Intensity = 5.0f;
-			light->Color = Color::Random();
-			light->Ambient = 0.02f;
-			moon.GetComponent<Transform>()->SetParent(m_Planet.GetComponent<Transform>().Get());
-		}
 	}
 
 	void Tick() override
