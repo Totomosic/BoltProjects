@@ -12,6 +12,7 @@ public:
 		GetWindow().DisableVSync();
 		Scene& scene = SceneManager::Get().AddScene();
 		Layer& layer = scene.AddLayer();
+		Layer& uiLayer = scene.AddLayer();
 
 		EntityFactory factory = layer.GetFactory();
 		m_Camera = factory.Camera(Matrix4f::Perspective(PI / 3.0f, GetWindow().Aspect(), 0.1f, 100.0f));
@@ -21,6 +22,14 @@ public:
 		material->LinkMetallic(1.0f);
 		material->LinkRoughness(0.5f);
 		m_Planet = factory.Sphere(1, std::move(material));
+
+		EntityFactory uiFactory = uiLayer.GetFactory();
+		uiFactory.Camera(Matrix4f::Orthographic(0, Width(), 0, Height(), -100, 100));
+
+		UIRectangle& rect = uiLayer.GetUI().GetRoot().GetFactory().CreateRectangle(300, 300, Color::Red, Transform({ Width() / 2, Height() / 2, 0 }));
+		UIRectangle& child = rect.GetFactory().CreateRectangle(100, 100, Color::Blue, Transform({ 100, 100, 1 }));
+
+		rect.GetFactory().CreateTextInput(300, 100, Color::Black, Color::White, Transform({ 0, 0, 1 }));
 	}
 
 	void Tick() override
