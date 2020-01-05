@@ -24,6 +24,7 @@ namespace Minecraft
 
 			EntityFactory factory = l.GetFactory();
 			m_Camera = factory.Camera(Matrix4f::Perspective(PI / 3, GetWindow().Aspect(), 0.1f, 5000.0f));
+			l.SetActiveCamera(m_Camera);
 
 			EntityHandle sun = factory.CreateTransform(Transform({ 0, 1000, 0 }));
 			ComponentHandle<LightSource> light = sun.Assign<LightSource>();
@@ -32,6 +33,7 @@ namespace Minecraft
 			Layer& uiLayer = s.AddLayer();
 			EntityFactory uiFactory = uiLayer.GetFactory();
 			EntityHandle uiCamera = uiFactory.Camera(Matrix4f::Orthographic(0, Width(), 0, Height(), -100, 100));
+			uiLayer.SetActiveCamera(uiCamera);
 			
 			m_Camera.GetTransform()->Translate(32, 200, 32);
 			m_Camera.GetTransform()->Rotate(-PI / 2, Vector3f::Right());
@@ -78,6 +80,7 @@ namespace Minecraft
 							}
 						}).ContinueWithOnMainThread([manager{ manager.get() }]()
 						{
+							BLT_INFO("Here");
 							manager->BuildAllChunks();
 						});
 				});
