@@ -51,7 +51,7 @@ namespace Minecraft
 	void ChunkManager::BuildChunk(int x, int z) const
 	{
 		Model* modelPtr = m_ChunkObjects[x + (uint64_t)z * GetVisibleXChunks()].ModelPtr.Get();
-		TaskManager::Run([x, z, this]()
+		TaskManager::Get().Run([x, z, this]()
 			{
 				return GetChunkRegion().GetFaces(x, z);
 			}).ContinueWithOnMainThread([modelPtr](std::vector<BlockFace> faces)

@@ -47,7 +47,7 @@ namespace Minecraft
 
 					manager = std::make_unique<ChunkManager>(factory, atlas.GetTexture(), 4, 4);
 					ChunkRegion& chunk = manager->GetChunkRegion();
-					TaskManager::Run([&chunk]()
+					TaskManager::Get().Run([&chunk]()
 						{
 							SimplexNoise noise;
 							Vector2f seed(10, 10);

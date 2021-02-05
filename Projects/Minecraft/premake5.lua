@@ -22,6 +22,7 @@ project "Minecraft"
     includedirs
     {
         "../../%{BoltDir}%{IncludeDirs.Bolt}",
+        "../../%{BoltDir}%{IncludeDirs.BoltLib}",
         "../../%{BoltDir}%{IncludeDirs.GLFW}",
         "../../%{BoltDir}%{IncludeDirs.Glad}",
         "../../%{BoltDir}%{IncludeDirs.ImGui}",
@@ -29,6 +30,7 @@ project "Minecraft"
         "../../%{BoltDir}%{IncludeDirs.FreeType}",
         "../../%{BoltDir}%{IncludeDirs.FreeTypeGL}",
         "../../%{BoltDir}%{IncludeDirs.Lua}",
+        "../../%{BoltDir}%{IncludeDirs.Dukglue}",
         "src"
     }
 
